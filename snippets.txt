@@ -1,0 +1,39 @@
+##############################
+# lossless 2 seconds
+##############################
+not lossless, yuv420 chroma subsampling
+ffmpeg -framerate 240 -t 2 -start_number 0 -i "attic.02097152.FireflyToneMapper.dst.%05d.png" -c:v libx264 -preset ultrafast -crf 5 -pix_fmt yuv420p ../ref_240fps_2s_crf5_yuv420.mp4
+
+-pix_fmt rgba preserves full 8-bit RGB + alpha (no chroma subsampling)
+but filesize big
+ffmpeg -framerate 240 -i %05d.png -t 2 -c:v png -pix_fmt rgba ../output_2s.mov
+
+ffmpeg -framerate 240 -t 2 -start_number 0 -i "%05d.png" -c:v libx265 -preset slow -pix_fmt yuv444p -x265-params lossless=1:profile=main444-8 ../out_240fps_2s_h265_lossless_yuv444.mkv
+ffmpeg -framerate 240 -i "%05d.png" -c:v libx265 -preset slow -pix_fmt yuv444p -x265-params lossless=1:profile=main444-8 ../video_1.mkv
+
+
+# not lossless
+# cmd = [
+#     "ffmpeg", "-y",
+#     "-framerate", str(FRAMERATE),
+#     "-t", str(DURATION_SEC),
+#     "-start_number", str(start_number),
+#     "-i", str(input_pattern),
+#     "-c:v", "libx264",
+#     "-preset", "ultrafast",
+#     "-crf", "5",
+#     "-pix_fmt", "yuv420p",
+#     str(out_path),
+# ]
+
+# hevc lossless
+cmd = [
+    'ffmpeg', '-y',
+    '-framerate', str(FRAMERATE),
+    '-i', str(input_pattern),
+    '-c:v', 'libx265',
+    '-preset', 'slow',
+    '-pix_fmt', 'yuv444p',
+    '-x265-params', 'lossless=1:profile=main444-8',
+    str(out_path),
+]
